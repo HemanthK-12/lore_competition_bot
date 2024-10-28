@@ -1,14 +1,19 @@
-# gazebo-line-follower
+# lore-competition-bot
 
-This whole repo was configured for ros1, make this supported for ros2
+This whole repo is configured for ROS2 Humble but any ROS2 version works.
 
-I changed the package.xml and CMakeLists.txt
-to make them compatible for ros2
+To run the simulation, clone this repository, go into the cloned folder and open the terminal in the folder containing src, LICENSE and README.md files. Run these commands there :
+`colcon build`
 
-For ros2, keep ament_cmake instead of catkin for ros1
-Same for rclpy for ros2 instead of rospy for ros1
+`source install/local_setup.bash    #You need to run this for every new terminal, but if you want this to be automatic for every terminal, add this to your .bashrc file in ~ directory. `
 
-colcon is for
+`ros2 launch lore_competition_bot laun.launch`
+
+I changed the package.xml and CMakeLists.txt to make them compatible for ros2
+
+For ros2, keep ament_cmake instead of catkin for ros1 and for rclpy for ros2 instead of rospy for ros1
+
+###### See if dependencies are installed
 
 `sudo apt install ros-humble-cv-bridge ros-humble-sensor-msgs ros-humble-geometry-msgs`
 
@@ -16,9 +21,6 @@ colcon is for
 sudo apt install ros-humble-ros-base
 sudo apt install python3-colcon-common-extensions
 ```
-
-`colcon build`
-See dependencies are installed or not first
 
 Install files anmd dependencies from the package.xml file
 
@@ -37,17 +39,10 @@ Install files anmd dependencies from the package.xml file
 
 `python3 -m pip show numpy opencv-python scipy`
 
-if anything missing, install them
-ROS2
-
 ```
 sudo apt update
-        sudo apt install ros-humble-gazebo-ros-pkgs ros-humble-cv-bridge ros-humble-sensor-msgs ros-humble-geometry-msgs
+sudo apt install ros-humble-gazebo-ros-pkgs ros-humble-cv-bridge ros-humble-sensor-msgs ros-humble-geometry-msgs
 ```
-
-Python
-       ` python3 -m pip install numpy opencv-python scipy`
-
 
 ### Explanation of Files and Their Roles
 
@@ -73,13 +68,9 @@ Python
    * Defines the SDF model for the track, including collision and visual properties.
 8. **urdf/robot.xacro:**
    * Defines the URDF model for the robot, including material properties for wheels.
-9. **worlds/353_ros_lab.world:**
+9. **worlds/line_follower_world.world:**
    * Defines the Gazebo world, including the track model and camera settings.
 10. **launch/robot.launch:**
     * Spawns the robot model in Gazebo using the URDF description.
 11. **launch/laun.launch:**
     * Includes other launch files to set up the Gazebo environment and launch the robot and its control nodes.
-
-See `~/node/move_robot.py` for the implementation. First, we grayscale a frame from the robot's camera feed, then apply a binary mask. Finally, the center of mass of the binary mask is computed, and the robot's movement is adjusted.
-
-Visit https://youtu.be/BuUYXrn7hKo for a video.
