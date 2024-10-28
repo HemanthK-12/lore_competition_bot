@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>lore_competition_bot</name>
+  <version>0.0.0</version>
+  <description>The lore_competition_bot package</description>
+
+  <!-- Update maintainer information -->
+  <maintainer email="griffin@todo.todo">griffin</maintainer>
+
+  <!-- Add license, e.g., MIT -->
+  <license>MIT</license>
+
+  <!-- Optional URLs for additional information -->
+  <!-- <url type="website">http://wiki.ros.org/lore_competition_bot</url> -->
+
+  <!-- Specify build tool dependency for ROS 2 (ament_cmake replaces catkin) -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- Specify dependencies. rospy is now ament-specific in ROS 2 -->
+  <exec_depend>rclpy</exec_depend>
+
+  <!-- Export is used for metadata in ROS 2 -->
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
+

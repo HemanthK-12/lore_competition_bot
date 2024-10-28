@@ -1,0 +1,760 @@
+## INCLUDE_DIRS: uncomment this if your package contains header files
+## LIBRARIES: libraries you create in this project that dependent projects also need
+## CATKIN_DEPENDS: catkin_packages dependent projects also need
+## DEPENDS: system dependencies of this project that dependent projects also need
+catkin_package(
+#  INCLUDE_DIRS include
+#  LIBRARIES lore_competition_bot
+#  CATKIN_DEPENDS rospy
+#  DEPENDS system_lib
+)
+
+###########
+## Build ##
+###########
+
+## Specify additional locations of header files
+## Your package locations should be listed before other locations
+include_directories(
+# include
+  ${catkin_INCLUDE_DIRS}
+)
+
+## Declare a C++ library
+# add_library(${PROJECT_NAME}
+#   src/${PROJECT_NAME}/lore_competition_bot.cpp
+# )
+
+## Add cmake target dependencies of the library
+## as an example, code may need to be generated before libraries
+## either from message generation or dynamic reconfigure
+# add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+## Declare a C++ executable
+## With catkin_make all packages are built within a single CMake context
+## The recommended prefix ensures that target names across packages don't collide
+# add_executable(${PROJECT_NAME}_node src/lore_competition_bot_node.cpp)
+
+## Rename C++ executable without prefix
+## The above recommended prefix causes long target names, the following renames the
+## target back to the shorter version for ease of user use
+## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
+# set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
+
+## Add cmake target dependencies of the executable
+## same as for the library above
+# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+## Specify libraries to link a library or executable target against
+# target_link_libraries(${PROJECT_NAME}_node
+#   ${catkin_LIBRARIES}
+# )
+
+#############
+## Install ##
+#############
+
+# all install targets should use catkin DESTINATION variables
+# See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
+
+## Mark executable scripts (Python etc.) for installation
+## in contrast to setup.py, you can choose the destination
+# install(PROGRAMS
+#   scripts/my_python_script
+#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
+
+## Mark executables and/or libraries for installation
+# install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_node
+#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
+
+## Mark cpp header files for installation
+# install(DIRECTORY include/${PROJECT_NAME}/
+#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+#   FILES_MATCHING PATTERN "*.h"
+#   PATTERN ".svn" EXCLUDE
+# )
+
+## Mark other files for installation (e.g. launch and bag files, etc.)
+# install(FILES
+#   # myfile1
+#   # myfile2
+#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+# )
+
+#############
+## Testing ##
+#############
+
+## Add gtest based cpp test target and link libraries
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_lore_competition_bot.cpp)
+# if(TARGET ${PROJECT_NAME}-test)
+#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
+# endif()
+
+## Add folders to be run by python nosetests
+# catkin_add_nosetests(test)
+
+
+-----------------------
+
+/README.md:
+-----------------------
+
+# gazebo-line-follower
+Simple Gazebo simulation of a line following robot (OpenCV, RoS, SciPy).
+
+See `~/node/move_robot.py` for the implementation. First, we grayscale a frame from the robot's camera feed, then apply a binary mask. Finally, the center of mass of the binary mask is computed, and the robot's movement is adjusted.
+
+Visit https://youtu.be/BuUYXrn7hKo for a video.
+
+
+
+-----------------------
+
+/launch/laun.launch:
+-----------------------
+
+<launch>
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+	    <env name="GAZEBO_RESOURCE_PATH" value="$(find lore_competition_bot)"/>
+	    <env name="GAZEBO_MODEL_PATH" value="$(find lore_competition_bot)/models"/>
+	    <arg name="world_name" value="$(find lore_competition_bot)/worlds/line_follower_world.world"/>
+	    <arg name="gui" value="true"/>
+    </include>
+
+	<include file="$(find lore_competition_bot)/launch/move_robot.launch">
+	</include>
+
+	<include file="$(find lore_competition_bot)/launch/robot.launch">
+		<arg name="init_pose" value="-x -0 -y 0.0 -z 1.0 -R 0.0 -P 0.0 -Y 0.4" />
+	</include>
+</launch>
+
+-----------------------
+
+/launch/move_robot.launch:
+-----------------------
+
+<launch>
+   <!-- My Package launch file -->
+   <node pkg="lore_competition_bot"
+         type="move_robot.py"
+         name="move_robot" 
+         output="screen">
+   </node>
+</launch>
+
+-----------------------
+
+/launch/robot.launch:
+-----------------------
+
+<launch>
+  <arg name="init_pose"/>
+  <arg name="model" default="$(find lore_competition_bot)/urdf/robot.xacro"/>
+
+  <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
+
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
+        args="$(arg init_pose) -unpause -urdf -model lab_robot -param robot_description" respawn="false" output="screen" />
+
+</launch>
+
+-----------------------
+
+/media/materials/scripts/track.material:
+-----------------------
+
+material track{
+    technique
+    {
+        pass
+        {
+            texture_unit
+            {
+                texture monza.png
+            }
+        }   
+    }
+}
+
+-----------------------
+
+/media/materials/textures/monza.png:
+-----------------------
+
+
+
+-----------------------
+
+/media/materials/textures/spa.png:
+-----------------------
+
+
+
+-----------------------
+
+/models/track/model.config:
+-----------------------
+
+<?xml version="1.0"?>
+
+<model>
+  <name>track</name>
+  <version>1.0</version>
+  <sdf version='1.5'>track.sdf</sdf>
+
+  <author>
+    <name>My name</name>
+    <email>name@email.address</email>
+  </author>
+
+  <description>
+    Template track for line following.
+  </description>
+</model>
+
+-----------------------
+
+/models/track/track.sdf:
+-----------------------
+
+<?xml version="1.0"?>
+<sdf version="1.4">
+<model name="track">
+  <static>true</static>
+    <link name="link">
+      <collision name="collision">
+        <geometry>
+          <plane>
+            <normal>0 0 1</normal>
+            <size> 5 5</size>
+          </plane>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>100</mu>
+              <mu2>100</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="visual">
+        <cast_shadows>false</cast_shadows>
+        <pose>0 0 0 </pose>
+        <geometry>
+          <plane>
+            <normal>0 0 1</normal>
+            <size>5 5</size>
+          </plane>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://materials/scripts</uri>
+            <uri>file://materials/textures</uri>
+            <name>track</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>
+
+-----------------------
+
+/node/README.txt:
+-----------------------
+
+Save your node Python scripts in this folder.
+
+-----------------------
+
+/node/move_robot.py:
+-----------------------
+
+#! /usr/bin/env python
+
+import rospy
+import numpy as np
+import cv2
+from scipy.ndimage.measurements import center_of_mass
+from geometry_msgs.msg import Twist
+from cv_bridge import CvBridge, CvBridgeError
+from sensor_msgs.msg import Image
+
+# Constants
+TURN_LEFT_SPD = 0.1
+TURN_RIGHT_SPD = 0.125
+STRAIGHT_SPD = 0.25
+ANGULAR_VEL = 1.25
+OFFSET_Y = 500
+
+# Global Variable that holds previous CoM
+prev = (400, 400)
+
+
+def callback(data):
+    global prev
+
+    try:
+        # Process grayscale and binary mask
+        img_grayscale = bridge.imgmsg_to_cv2(data, 'mono8')
+        _, img_bin = cv2.threshold(img_grayscale, 128, 1, cv2.THRESH_BINARY_INV)
+
+        # Compute center of mass of bottom 300 rows
+        coords_bin = center_of_mass(img_bin[-300:])
+        y = coords_bin[0] + OFFSET_Y
+        x = coords_bin[1]
+
+        # if CoM is NaN, take previous iteration's value of CoM
+        if np.isnan(x) or np.isnan(y):
+            x = prev[0]
+            y = prev[1]
+        else:
+            prev = (x, y)
+    
+        print((x,y))
+
+        # new Twist object
+        move = Twist()
+
+        # turn left or right or go straight
+        if x < 350:
+            move.linear.x = TURN_LEFT_SPD
+            move.angular.z = ANGULAR_VEL
+            pub.publish(move)
+        elif x >= 350 and x <= 450:
+            move.linear.x = STRAIGHT_SPD
+            move.angular.z = 0
+            pub.publish(move)
+        else:
+            move.linear.x = TURN_RIGHT_SPD
+            move.angular.z = -1 * ANGULAR_VEL
+            pub.publish(move)
+
+    except CvBridgeError as e:
+        print(e)
+
+
+if __name__ == '__main__':
+    bridge = CvBridge()
+    rospy.init_node('move_robot')
+    rospy.Subscriber('/robot/camera/image_raw', Image, callback)
+    pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
+    rate = rospy.Rate(2)
+    rospy.spin()
+
+-----------------------
+
+/package.xml:
+-----------------------
+
+<?xml version="1.0"?>
+<package format="2">
+  <name>lore_competition_bot</name>
+  <version>0.0.0</version>
+  <description>The lore_competition_bot package</description>
+
+  <!-- One maintainer tag required, multiple allowed, one person per tag -->
+  <!-- Example:  -->
+  <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
+  <maintainer email="griffin@todo.todo">griffin</maintainer>
+
+
+  <!-- One license tag required, multiple allowed, one license per tag -->
+  <!-- Commonly used license strings: -->
+  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
+  <license>TODO</license>
+
+
+  <!-- Url tags are optional, but multiple are allowed, one per tag -->
+  <!-- Optional attribute type can be: website, bugtracker, or repository -->
+  <!-- Example: -->
+  <!-- <url type="website">http://wiki.ros.org/lore_competition_bot</url> -->
+
+
+  <!-- Author tags are optional, multiple are allowed, one per tag -->
+  <!-- Authors do not have to be maintainers, but could be -->
+  <!-- Example: -->
+  <!-- <author email="jane.doe@example.com">Jane Doe</author> -->
+
+
+  <!-- The *depend tags are used to specify dependencies -->
+  <!-- Dependencies can be catkin packages or system dependencies -->
+  <!-- Examples: -->
+  <!-- Use depend as a shortcut for packages that are both build and exec dependencies -->
+  <!--   <depend>roscpp</depend> -->
+  <!--   Note that this is equivalent to the following: -->
+  <!--   <build_depend>roscpp</build_depend> -->
+  <!--   <exec_depend>roscpp</exec_depend> -->
+  <!-- Use build_depend for packages you need at compile time: -->
+  <!--   <build_depend>message_generation</build_depend> -->
+  <!-- Use build_export_depend for packages you need in order to build against this package: -->
+  <!--   <build_export_depend>message_generation</build_export_depend> -->
+  <!-- Use buildtool_depend for build tool packages: -->
+  <!--   <buildtool_depend>catkin</buildtool_depend> -->
+  <!-- Use exec_depend for packages you need at runtime: -->
+  <!--   <exec_depend>message_runtime</exec_depend> -->
+  <!-- Use test_depend for packages you need only for testing: -->
+  <!--   <test_depend>gtest</test_depend> -->
+  <!-- Use doc_depend for packages you need only for building documentation: -->
+  <!--   <doc_depend>doxygen</doc_depend> -->
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>rospy</build_depend>
+  <build_export_depend>rospy</build_export_depend>
+  <exec_depend>rospy</exec_depend>
+
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>
+
+
+-----------------------
+
+/urdf/macros.xacro:
+-----------------------
+
+<?xml version="1.0"?>
+<robot>
+  <macro name="cylinder_inertial" params="name m r h">
+    <inertial name="${name}_inertial">
+      <mass value="${m}"/>
+      <inertia  ixx="${m*(3*r*r+h*h)/12}" ixy = "0" ixz = "0"
+        iyy="${m*(3*r*r+h*h)/12}" iyz = "0"
+        izz="${m*r*r/2}"/>
+    </inertial>
+  </macro>
+
+  <macro name="box_inertial" params="name m x y z">
+    <inertial name="${name}_inertial">
+      <mass value="${m}"/>
+      <inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
+        iyy="${m*(x*x+y*y)/12}" iyz = "0"
+        izz="${m*(x*x+z*z)/12}"/>
+    </inertial>
+  </macro>
+
+  <macro name="sphere_inertial" params="name m r">
+    <inertial name="${name}_inertial">
+      <mass value="${m}"/>
+      <inertia  ixx="${2*m*r*r/5}" ixy = "0" ixz = "0"
+        iyy="${2*m*r*r/5}" iyz = "0"
+        izz="${2*m*r*r/5}"/>
+    </inertial>
+  </macro>
+</robot>
+
+-----------------------
+
+/urdf/materials.xacro:
+-----------------------
+
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+	<material name="black">
+	  <color rgba="0.0 0.0 0.0 1.0"/>
+	</material>
+
+	<material name="blue">
+	  <color rgba="0.0 0.0 0.8 1.0"/>
+	</material>
+
+	<material name="green">
+	  <color rgba="0.0 0.8 0.0 1.0"/>
+	</material>
+
+	<material name="grey">
+	  <color rgba="0.2 0.2 0.2 1.0"/>
+	</material>
+
+	<material name="orange">
+	  <color rgba="${255/255} ${108/255} ${10/255} 1.0"/>
+	</material>
+
+	<material name="brown">
+	  <color rgba="${222/255} ${207/255} ${195/255} 1.0"/>
+	</material>
+
+	<material name="red">
+	  <color rgba="0.8 0.0 0.0 1.0"/>
+	</material>
+
+	<material name="white">
+	  <color rgba="1.0 1.0 1.0 1.0"/>
+	</material>
+
+	<material name="yellow">
+	  <color rgba="1.0 1.0 0 1.0"/>
+	</material>
+</robot>
+
+-----------------------
+
+/urdf/robot.xacro:
+-----------------------
+
+<?xml version='1.0'?>
+
+<robot name="robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:property name="camera_width" value="0.02"/>
+  <xacro:property name="camera_length" value="0.02"/>
+  <xacro:property name="camera_height" value="0.01"/>
+  <xacro:property name="camera_mass" value="0.01"/>
+  <xacro:property name="chassis_width" value="0.15"/>
+  <xacro:property name="chassis_length" value="0.2"/>
+  <xacro:property name="chassis_height" value="0.05"/>
+  <xacro:property name="chassis_mass" value="0.5"/>
+  <xacro:property name="wheel_radius" value="0.04"/>
+  <xacro:property name="wheel_width" value="0.03"/>
+  <xacro:property name="wheel_mass" value="0.025"/>
+
+  <xacro:include filename="$(find lore_competition_bot)/urdf/macros.xacro"/>
+  <xacro:include filename="$(find lore_competition_bot)/urdf/materials.xacro"/>
+
+  <link name='chassis'>
+    <xacro:box_inertial name="chassis" m="${chassis_mass}" x="${chassis_length}" y="${chassis_width}" z="${chassis_height}"/>
+    <collision name='chassis_collision'>
+      <geometry>
+        <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+      </geometry>
+    </collision>
+    <visual name='chassis_visual'>
+      <origin xyz="0 0 0" rpy=" 0 0 0"/>
+      <geometry>
+        <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+      </geometry>
+      <material name="Cyan">
+        <color rgba="0 1.0 1.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <link name='wheel_FR'>
+    <xacro:cylinder_inertial name="wheel_FR" m="${wheel_mass}" r="${wheel_radius}" h="${wheel_width}"/>
+    <collision name='wheel_FR_collision'>
+      <origin xyz="0 0 0" rpy="1.5708 0 0"/>    
+      <geometry>
+        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+      </geometry>
+    </collision>
+    <visual name='wheel_FR_visual'>
+      <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <link name='wheel_FL'>
+    <xacro:cylinder_inertial name="wheel_FL" m="${wheel_mass}" r="${wheel_radius}" h="${wheel_width}"/>
+    <collision name='wheel_FL_collision'>
+      <origin xyz="0 0 0" rpy="1.5708 0 0"/>    
+      <geometry>
+        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+      </geometry>
+    </collision>
+    <visual name='wheel_FL_visual'>
+      <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <link name='wheel_RR'>
+    <xacro:cylinder_inertial name="wheel_RR" m="${wheel_mass}" r="${wheel_radius}" h="${wheel_width}"/>
+    <collision name='wheel_RR_collision'>
+      <origin xyz="0 0 0" rpy="1.5708 0 0"/>    
+      <geometry>
+        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+      </geometry>
+    </collision>
+    <visual name='wheel_RR_visual'>
+      <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <link name='wheel_RL'>
+    <xacro:cylinder_inertial name="wheel_RL" m="${wheel_mass}" r="${wheel_radius}" h="${wheel_width}"/>
+    <collision name='wheel_RL_collision'>
+      <origin xyz="0 0 0" rpy="1.5708 0 0"/>    
+      <geometry>
+        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+      </geometry>
+    </collision>
+    <visual name='wheel_RL_visual'>
+      <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <link name='camera_link'>
+    <xacro:box_inertial name="camera_link" m="${camera_mass}" x="${camera_width}" y="${camera_length}" z="${camera_height}"/>
+    <collision name='camera_link_collision'>
+      <geometry>
+        <box size="${camera_length} ${camera_width} ${camera_height}"/>
+      </geometry>
+    </collision>
+    <visual name='camera_link_visual'>
+      <origin xyz="0 0 0" rpy=" 0 0 0"/>
+      <geometry>
+        <box size="${camera_length} ${camera_width} ${camera_height}"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <joint name="wheel_FR_joint" type="continuous">
+    <parent link="chassis"/>
+    <child link="wheel_FR"/>
+    <origin xyz="${chassis_length/2-wheel_radius} -${chassis_width/2+wheel_width/2} 0"
+            rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <joint name="wheel_FL_joint" type="continuous">
+    <parent link="chassis"/>
+    <child link="wheel_FL"/>
+    <origin xyz="${chassis_length/2-wheel_radius} ${chassis_width/2+wheel_width/2} 0"
+            rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <joint name="wheel_RR_joint" type="continuous">
+    <parent link="chassis"/>
+    <child link="wheel_RR"/>
+    <origin xyz="-${chassis_length/2-wheel_radius} -${chassis_width/2+wheel_width/2} 0"
+            rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <joint name="wheel_RL_joint" type="continuous">
+    <parent link="chassis"/>
+    <child link="wheel_RL"/>
+    <origin xyz="-${chassis_length/2-wheel_radius} ${chassis_width/2+wheel_width/2} 0"
+            rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <joint name="camera_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="camera_link"/>
+    <origin xyz="${chassis_length/2} 0 ${chassis_height/2+camera_height/2}"/>
+  </joint>
+
+  <gazebo reference="chassis">
+    <material>Gazebo/Orange</material>
+  </gazebo>
+
+  <gazebo reference="camera_link">
+  <sensor type="camera" name="camera1">
+      <update_rate>30.0</update_rate>
+      <camera name="head">
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>800</width>
+          <height>800</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>300</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          <!-- Noise is sampled independently per pixel on each frame.
+               That pixel's noise value is added to each of its color
+               channels, which at that point lie in the range [0,1]. -->
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+      <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>robot/camera</cameraName>
+        <imageTopicName>image_raw</imageTopicName>
+        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+        <frameName>camera_link</frameName>
+        <hackBaseline>0.07</hackBaseline>
+        <distortionK1>0.0</distortionK1>
+        <distortionK2>0.0</distortionK2>
+        <distortionK3>0.0</distortionK3>
+        <distortionT1>0.0</distortionT1>
+        <distortionT2>0.0</distortionT2>
+      </plugin>
+    </sensor>
+    <material>Gazebo/Blue</material>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
+      <updateRate>100.0</updateRate>
+      <robotNamespace>/</robotNamespace>
+      <leftFrontJoint>wheel_FL_joint</leftFrontJoint>
+      <rightFrontJoint>wheel_FR_joint</rightFrontJoint>
+      <leftRearJoint>wheel_RL_joint</leftRearJoint>
+      <rightRearJoint>wheel_RR_joint</rightRearJoint>
+      <wheelSeparation>${chassis_width}</wheelSeparation>
+      <wheelDiameter>${wheel_radius* 2}</wheelDiameter>
+      <robotBaseFrame>base_link</robotBaseFrame>
+      <torque>20</torque>
+      <topicName>cmd_vel</topicName>
+      <broadcastTF>false</broadcastTF>
+    </plugin>
+  </gazebo>
+
+  <gazebo reference="wheel_FL">
+    <material>Gazebo/Yellow</material>
+  </gazebo>
+
+  <gazebo reference="wheel_FR">
+    <material>Gazebo/Yellow</material>
+  </gazebo>
+
+  <gazebo reference="wheel_RL">
+    <material>Gazebo/Yellow</material>
+  </gazebo>
+
+  <gazebo reference="wheel_RR">
+    <material>Gazebo/Yellow</material>
+  </gazebo>
+
+</robot>
+
+
+-----------------------
+
+/worlds/line_follower_world.world:
+-----------------------
+
+<?xml version="1.0"?>
+<sdf version="1.4">
+  <world name="default">
+    <include>
+      <uri>model://track</uri>
+    </include>
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <gui>
+      <camera name="user_camera">
+        <pose>0.0 0.0 4.0 0.0 1.57 0.0</pose>
+      </camera>
+    </gui>
+  </world>
+</sdf>

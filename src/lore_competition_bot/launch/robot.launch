@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Arguments -->
+  <arg name="init_x" default="-0.0"/>
+  <arg name="init_y" default="0.0"/>
+  <arg name="init_z" default="1.0"/>
+  <arg name="init_R" default="0.0"/>
+  <arg name="init_P" default="0.0"/>
+  <arg name="init_Y" default="0.4"/>
+  <arg name="model" default="$(find-pkg-share lore_competition_bot)/urdf/robot.xacro"/>
+
+  <!-- Convert xacro to URDF -->
+  <let name="robot_description" value="$(command 'xacro $(var model)')"/>
+
+  <!-- Spawn the robot -->
+  <node pkg="gazebo_ros" exec="spawn_entity.py"
+        name="urdf_spawner"
+        output="screen"
+        args="-entity lab_robot -topic robot_description 
+              -x $(var init_x) -y $(var init_y) -z $(var init_z) 
+              -R $(var init_R) -P $(var init_P) -Y $(var init_Y)">
+  </node>
+</launch>

@@ -1,0 +1,21 @@
+<?xml version='1.0'?>
+<launch>
+    <!-- Set environment variables -->
+    <set_env name="GAZEBO_RESOURCE_PATH" value="$(find-pkg-share lore_competition_bot)"/>
+    <set_env name="GAZEBO_MODEL_PATH" value="$(env GAZEBO_RESOURCE_PATH)/models"/>
+
+    <!-- Include the Gazebo world launch file -->
+    <include file="$(find-pkg-share gazebo_ros)/launch/gazebo.launch.py">
+        <arg name="world_name" value="$(env GAZEBO_RESOURCE_PATH)/worlds/line_follower_world.world"/>
+        <arg name="gui" value="true"/>
+    </include>
+
+    <!-- Include the move robot launch file -->
+    <include file="$(env GAZEBO_RESOURCE_PATH)/launch/move_robot.launch"/>
+
+    <!-- Include the robot launch file with initial pose arguments -->
+    <include file="$(env GAZEBO_RESOURCE_PATH)/launch/robot.launch">
+        <arg name="init_pose" value="-x -0.0 -y 0.0 -z 1.0 -R 0.0 -P 0.0 -Y 0.4"/>
+    </include>
+</launch>
+
